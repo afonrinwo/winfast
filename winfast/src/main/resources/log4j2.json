@@ -1,0 +1,95 @@
+{
+	"configuration": {
+		"name": "Default",
+		"properties": {
+			"property": [
+				{
+					"name": "winfast",
+					"value": "logs"
+				},
+				{
+					"name": "archive",
+					"value": "${winfast}/archive/"
+				}
+			]
+		},
+		"appenders": {
+			"Console": {
+				"name": "Console-Appender",
+				"target": "SYSTEM_OUT",
+				"PatternLayout": {
+					"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+				}
+			},
+			"File": [
+				{
+					"name": "InfoFile-Appender",
+					"fileName": "${winfast}/infolog.log",
+					"PatternLayout": {
+						"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+					}
+				},
+				{
+					"name": "ErrorFile-Appender",
+					"fileName": "${winfast}/errorlog.log",
+					"PatternLayout": {
+						"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+					}
+				}
+			],
+			"RollingFile": {
+				"name": "RollingFile-Appender",
+				"fileName": "${winfast}/debuglog.log",
+				"filePattern": "${archive}/winfast/debuglog.log.%d{yyyy-MM-dd}.gz",
+				"PatternLayout": {
+					"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+				},
+				"Policies": {
+					"TimeBasedTriggeringPolicy": {
+						"interval": "1",
+						"modulate": "true"
+					}
+				},
+				"DefaultRolloverStrategy": {
+					"max": "30"
+				}
+			}
+		},
+		"loggers": {
+			"logger": {
+				"name": "com.winfast",
+				"level": "debug",
+				"additivity": "false",
+				"appender-ref": [
+					{
+						"ref": "Console-Appender",
+						"level": "info"
+					},
+					{
+						"ref": "RollingFile-Appender",
+						"level": "debug"
+					},
+					{
+						"ref": "InfoFile-Appender",
+						"level": "info"
+					},
+					{
+						"ref": "ErrorFile-Appender",
+						"level": "error"
+					}
+				]
+			},
+			"root": {
+				"level": "debug",
+				"appender-ref": [
+					{
+						"ref": "Console-Appender"
+					},
+					{
+						"ref": "RollingFile-Appender"
+					}
+				]
+			}
+		}
+	}
+}
