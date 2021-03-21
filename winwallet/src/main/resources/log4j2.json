@@ -1,0 +1,95 @@
+{
+	"configuration": {
+		"name": "Default",
+		"properties": {
+			"property": [
+				{
+					"name": "winwallet",
+					"value": "logs"
+				},
+				{
+					"name": "archive",
+					"value": "${winwallet}/archive/"
+				}
+			]
+		},
+		"appenders": {
+			"Console": {
+				"name": "Console-Appender",
+				"target": "SYSTEM_OUT",
+				"PatternLayout": {
+					"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+				}
+			},
+			"File": [
+				{
+					"name": "InfoFile-Appender",
+					"fileName": "${winwallet}/infolog.log",
+					"PatternLayout": {
+						"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+					}
+				},
+				{
+					"name": "ErrorFile-Appender",
+					"fileName": "${winwallet}/errorlog.log",
+					"PatternLayout": {
+						"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+					}
+				}
+			],
+			"RollingFile": {
+				"name": "RollingFile-Appender",
+				"fileName": "${winwallet}/debuglog.log",
+				"filePattern": "${archive}/winwallet/debuglog.log.%d{yyyy-MM-dd-hh-mm}.gz",
+				"PatternLayout": {
+					"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+				},
+				"Policies": {
+					"TimeBasedTriggeringPolicy": {
+						"interval": "1",
+						"modulate": "true"
+					}
+				},
+				"DefaultRolloverStrategy": {
+					"max": "30"
+				}
+			}
+		},
+		"loggers": {
+			"logger": {
+				"name": "com.winfast.winwallet",
+				"level": "debug",
+				"additivity": "false",
+				"appender-ref": [
+					{
+						"ref": "Console-Appender",
+						"level": "info"
+					},
+					{
+						"ref": "RollingFile-Appender",
+						"level": "debug"
+					},
+					{
+						"ref": "InfoFile-Appender",
+						"level": "info"
+					},
+					{
+						"ref": "ErrorFile-Appender",
+						"level": "error"
+					}
+				]
+			},
+			"root": {
+				"level": "debug",
+				"appender-ref": [
+					{
+						"ref": "Console-Appender"
+					},
+					{
+						"ref": "RollingFile-Appender"
+					}
+				]
+			}
+		}
+	}
+}
