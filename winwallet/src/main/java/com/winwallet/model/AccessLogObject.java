@@ -31,7 +31,7 @@ public class AccessLogObject implements Serializable {
 	@Column(name="uniqueId", nullable = false)
 	private long uniqueId;
 	
-	@Column(name="agentId", nullable= false)
+	@Column(name="agentId")
 	private String agentId;
 	
 	@Column(name = "clientId", nullable = false)
@@ -46,37 +46,37 @@ public class AccessLogObject implements Serializable {
 	@Column(name = "channel", nullable = false)
 	private String channel;
 
-	@Column(name="agentLocationAddress", nullable= false)
+	@Column(name="agentLocationAddress")
 	private String agentLocationAddress;
 	
-	@Column(name="agentLocationTown", nullable= false)
+	@Column(name="agentLocationTown")
 	private String agentLocationTown;
 	
-	@Column(name="agentLocationLGA", nullable= false)
+	@Column(name="agentLocationLGA")
 	private String agentLocationLGA;
 	
-	@Column(name="agentLocationState", nullable= false)
+	@Column(name="agentLocationState")
 	private String agentLocationState;
 	
-	@Column(name="email", nullable= false)
+	@Column(name="email")
 	private String email;
 	
-	@Column(name="firstName", nullable= false)
+	@Column(name="firstName")
 	private String firstName;
 	
-	@Column(name="lastName", nullable= false)
+	@Column(name="lastName")
 	private String lastName;
 	
-	@Column(name="bankName", nullable = false)
+	@Column(name="bankName")
 	private String bankName;
 	
-	@Column(name="bvn", nullable = false)
+	@Column(name="bvn")
 	private String bvn;
 	
-	@Column(name="accountName", nullable = false)
+	@Column(name="accountName")
 	private String accountName;
 	
-	@Column(name="accountNumber", nullable = false)
+	@Column(name="accountNumber")
 	private String accountNumber;
 	
 	@Column(name = "requestType", nullable = false)

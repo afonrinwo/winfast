@@ -1,15 +1,18 @@
+/**
+ * 
+ */
 package com.winwallet.repository;
 
 import java.io.Serializable;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.winwallet.model.cashout.CashOutLogObject;
+import com.winwallet.model.payment.PaymentLogObject;
 
 /**
  * @author Emmanuel Afonrinwo
  *
  */
-public interface CashOutLogRepository extends CrudRepository<CashOutLogObject, Serializable> {
+public interface PaymentRepository extends CrudRepository<PaymentLogObject, Serializable> {
 
 }

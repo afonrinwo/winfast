@@ -21,6 +21,8 @@ import com.winwallet.model.account.LienRequest;
 import com.winwallet.model.account.PNDRequest;
 import com.winwallet.model.balance.WalletBalanceRequest;
 import com.winwallet.model.balance.WalletBalanceResponse;
+import com.winwallet.model.cashout.GenerateCashOutTokenRequest;
+import com.winwallet.model.cashout.RedeemCashOutTokenRequest;
 import com.winwallet.model.enquiry.WalletEnquiryRequest;
 import com.winwallet.model.enquiry.WalletEnquiryResponse;
 import com.winwallet.utility.AuthUtility;
@@ -55,7 +57,7 @@ public class UtilityController {
 	@RequestMapping(value = "/walletBalance", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody WalletBalanceResponse walletBalance(HttpServletRequest request, @Validated @RequestBody WalletBalanceRequest walletBalanceRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return utilityManager.walletBalance(walletBalanceRequest, LocalDateTime.now().toString());
+			return utilityManager.walletBalance(walletBalanceRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.walletBalanceResponse(0L, walletBalanceRequest.getClientId(), 96);
 		}
@@ -64,7 +66,7 @@ public class UtilityController {
 	@RequestMapping(value = "/removeLien", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response removeLien(HttpServletRequest request, @Validated @RequestBody LienRequest lienRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return utilityManager.removeLien(lienRequest, LocalDateTime.now().toString());
+			return utilityManager.removeLien(lienRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, lienRequest.getClientId(), 96);
 		}
@@ -73,7 +75,7 @@ public class UtilityController {
 	@RequestMapping(value = "/placeLien", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response placeLien(HttpServletRequest request, @Validated @RequestBody LienRequest lienRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return utilityManager.placeLien(lienRequest, LocalDateTime.now().toString());
+			return utilityManager.placeLien(lienRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, lienRequest.getClientId(), 96);
 		}
@@ -82,7 +84,7 @@ public class UtilityController {
 	@RequestMapping(value = "/placePnd", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response pnd(HttpServletRequest request, @Validated @RequestBody PNDRequest pndRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return utilityManager.placePnd(pndRequest, LocalDateTime.now().toString());
+			return utilityManager.placePnd(pndRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, pndRequest.getClientId(), 96);
 		}
@@ -92,9 +94,30 @@ public class UtilityController {
 	@RequestMapping(value = "/removePnd", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response removePnd(HttpServletRequest request, @Validated @RequestBody PNDRequest pNDRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return utilityManager.removePND(pNDRequest, LocalDateTime.now().toString());
+			return utilityManager.removePND(pNDRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, pNDRequest.getClientId(), 96);
+		}
+		
+	}
+	
+	@RequestMapping(value = "/generateCashOutToken", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	public @ResponseBody Response generateCashOutToken(HttpServletRequest request, @Validated @RequestBody GenerateCashOutTokenRequest generateCashOutTokenRequest) {
+		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
+			return utilityManager.generateCashOutToken(request.getHeader("app-id"), generateCashOutTokenRequest, LocalDateTime.now());
+		} else {
+			return responseUtility.response(0L, generateCashOutTokenRequest.getClientId(), 96);
+		}
+		
+	}
+	
+	
+	@RequestMapping(value = "/redeemCashOutToken", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	public @ResponseBody Response redeemCashOutToken(HttpServletRequest request, @Validated @RequestBody RedeemCashOutTokenRequest redeemCashOutTokenRequest) {
+		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
+			return utilityManager.redeemCashOutToken(redeemCashOutTokenRequest, LocalDateTime.now());
+		} else {
+			return responseUtility.response(0L, redeemCashOutTokenRequest.getClientId(), 96);
 		}
 		
 	}

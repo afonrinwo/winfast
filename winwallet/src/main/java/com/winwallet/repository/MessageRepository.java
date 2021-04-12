@@ -15,6 +15,6 @@ import com.winwallet.model.utility.SMSObject;
  *
  */
 @Repository
-public interface SMSRepository extends CrudRepository<SMSObject, Serializable> {
+public interface MessageRepository extends CrudRepository<SMSObject, Serializable> {
 
 }

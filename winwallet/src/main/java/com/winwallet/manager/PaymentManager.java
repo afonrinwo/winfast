@@ -26,9 +26,9 @@ import com.winwallet.model.payment.WalletDebitRequest;
 import com.winwallet.model.payment.WalletDepositRequest;
 import com.winwallet.repository.CustomerWalletRepository;
 import com.winwallet.repository.OfficeWalletRepository;
-import com.winwallet.repository.PaymentLogRepository;
+import com.winwallet.repository.PaymentRepository;
+import com.winwallet.utility.MessageUtility;
 import com.winwallet.utility.ResponseUtility;
-import com.winwallet.utility.SMSUtility;
 
 /**
  * @author Emmanuel Afonrinwo
@@ -43,7 +43,7 @@ public class PaymentManager {
 	private OfficeWalletObject officeWalletObject;
 
 	@Autowired
-	PaymentLogRepository paymentLogRepository;
+	PaymentRepository paymentRepository;
 
 	@Autowired
 	CustomerWalletRepository customerWalletRepository;
@@ -58,7 +58,7 @@ public class PaymentManager {
 	OfficeWalletRepository officeWalletRepository;
 
 	@Autowired
-	SMSUtility smsUtility;
+	MessageUtility messageUtility;
 
 	@Autowired
 	ConfigurationObject configurationObject;
@@ -66,7 +66,7 @@ public class PaymentManager {
 	@Autowired
 	UtilityManager utilityManager;
 
-	public Response walletDeposit(WalletDepositRequest walletDepositRequest, String requestIn) {
+	public Response walletDeposit(WalletDepositRequest walletDepositRequest, LocalDateTime requestIn) {
 
 		TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
 		TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
@@ -83,7 +83,7 @@ public class PaymentManager {
 			paymentLogObject.setRequestType("WalletDeposit");
 			paymentLogObject.setRequestIn(requestIn);
 			paymentLogObject.setFundSource(walletDepositRequest.getFundSource());
-			paymentLogObject = paymentLogRepository.save(paymentLogObject);
+			paymentLogObject = paymentRepository.save(paymentLogObject);
 
 			if (customerWalletRepository.existsByMsisdn(walletDepositRequest.getMsisdn())) {
 
@@ -178,8 +178,8 @@ public class PaymentManager {
 				transactionManager.commit(transactionStatus);
 
 				// SMS notification
-				smsUtility.sendsms(walletDepositRequest.getMsisdn2CreditNetwork(), customerWalletObject.getMsisdn(),
-						"message");
+				messageUtility.sendsms(paymentLogObject.getClientId(), walletDepositRequest.getMsisdn2CreditNetwork(), walletDepositRequest.getMsisdn2Credit(), 
+						"", requestIn);
 
 				return responseUtility.response(paymentLogObject.getUniqueId(), paymentLogObject.getClientId(), 0);
 			}
@@ -193,7 +193,7 @@ public class PaymentManager {
 
 	}
 
-	public Response walletCredit(WalletCreditRequest walletCreditRequest, String requestIn) {
+	public Response walletCredit(WalletCreditRequest walletCreditRequest, LocalDateTime requestIn) {
 		TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
 		TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
 
@@ -208,7 +208,7 @@ public class PaymentManager {
 			paymentLogObject.setRequestType("walletCredit");
 			paymentLogObject.setNarration(walletCreditRequest.getNarration());
 			paymentLogObject.setRequestIn(requestIn);
-			paymentLogObject = paymentLogRepository.save(paymentLogObject);
+			paymentLogObject = paymentRepository.save(paymentLogObject);
 
 			customerWalletObject = new CustomerWalletObject();
 			customerWalletObject = customerWalletRepository.findByMsisdn(walletCreditRequest.getMsisdn());
@@ -255,7 +255,7 @@ public class PaymentManager {
 		}
 	}
 
-	public Response walletDebit(WalletDebitRequest walletDebitRequest, String requestIn) {
+	public Response walletDebit(WalletDebitRequest walletDebitRequest, LocalDateTime requestIn) {
 
 		TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
 		TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
@@ -271,7 +271,7 @@ public class PaymentManager {
 			paymentLogObject.setRequestType("walletDebit");
 			paymentLogObject.setNarration(walletDebitRequest.getNarration());
 			paymentLogObject.setRequestIn(requestIn);
-			paymentLogObject = paymentLogRepository.save(paymentLogObject);
+			paymentLogObject = paymentRepository.save(paymentLogObject);
 
 			String code = utilityManager.walletRules(walletDebitRequest.getMsisdn(), walletDebitRequest.getPin(),
 					walletDebitRequest.getAmount());
@@ -328,7 +328,7 @@ public class PaymentManager {
 		}
 	}
 
-	public Response wallet2Wallet(Wallet2WalletRequest wallet2WalletRequest, String requestIn) {
+	public Response wallet2Wallet(Wallet2WalletRequest wallet2WalletRequest, LocalDateTime requestIn) {
 
 		TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
 		TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
@@ -347,7 +347,7 @@ public class PaymentManager {
 			paymentLogObject.setRequestType("walletDebit");
 			paymentLogObject.setNarration(wallet2WalletRequest.getNarration());
 			paymentLogObject.setRequestIn(requestIn);
-			paymentLogObject = paymentLogRepository.save(paymentLogObject);
+			paymentLogObject = paymentRepository.save(paymentLogObject);
 			
 			String code = utilityManager.walletRules(wallet2WalletRequest.getMsisdn2Debit(), wallet2WalletRequest.getPin(),
 					wallet2WalletRequest.getAmount());

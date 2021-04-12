@@ -4,6 +4,7 @@
 package com.winwallet.model.cashout;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,7 +53,7 @@ public class CashOutLogObject implements Serializable{
 	private String requestType;
 	
 	@Column(name = "requestIn", nullable = false)
-	private String requestIn;
+	private LocalDateTime requestIn;
 	
 	@Column(name = "bank2Credit")
 	private String bank2Credit;
@@ -62,6 +63,16 @@ public class CashOutLogObject implements Serializable{
 	
 	@Column(name = "agentId2CreditNetwork")
 	private String agentId2CreditNetwork;
+	
+	@Column(name = "payToken")
+	private String payToken;
+	
+	@Column(name = "payFlag")
+	private String payFlag;
+	
+	@Column(name = "payDate")
+	private LocalDateTime payDate;
+
 
 	/**
 	 * 
@@ -85,10 +96,14 @@ public class CashOutLogObject implements Serializable{
 	 * @param bank2Credit
 	 * @param agentId2Credit
 	 * @param agentId2CreditNetwork
+	 * @param payToken
+	 * @param payFlag
+	 * @param payDate
 	 */
 	public CashOutLogObject(long uniqueId, String clientId, String msisdn2Debit, String msisdn2DebitNetwork, String pin,
-			double amount, String channel, String narration, String requestType, String requestIn, String bank2Credit,
-			String agentId2Credit, String agentId2CreditNetwork) {
+			double amount, String channel, String narration, String requestType, LocalDateTime requestIn, String bank2Credit,
+			String agentId2Credit, String agentId2CreditNetwork, String payToken, String payFlag,
+			LocalDateTime payDate) {
 		super();
 		this.uniqueId = uniqueId;
 		this.clientId = clientId;
@@ -103,6 +118,9 @@ public class CashOutLogObject implements Serializable{
 		this.bank2Credit = bank2Credit;
 		this.agentId2Credit = agentId2Credit;
 		this.agentId2CreditNetwork = agentId2CreditNetwork;
+		this.payToken = payToken;
+		this.payFlag = payFlag;
+		this.payDate = payDate;
 	}
 
 	/**
@@ -234,14 +252,14 @@ public class CashOutLogObject implements Serializable{
 	/**
 	 * @return the requestIn
 	 */
-	public String getRequestIn() {
+	public LocalDateTime getRequestIn() {
 		return requestIn;
 	}
 
 	/**
 	 * @param requestIn the requestIn to set
 	 */
-	public void setRequestIn(String requestIn) {
+	public void setRequestIn(LocalDateTime requestIn) {
 		this.requestIn = requestIn;
 	}
 
@@ -285,6 +303,48 @@ public class CashOutLogObject implements Serializable{
 	 */
 	public void setAgentId2CreditNetwork(String agentId2CreditNetwork) {
 		this.agentId2CreditNetwork = agentId2CreditNetwork;
+	}
+
+	/**
+	 * @return the payToken
+	 */
+	public String getPayToken() {
+		return payToken;
+	}
+
+	/**
+	 * @param payToken the payToken to set
+	 */
+	public void setPayToken(String payToken) {
+		this.payToken = payToken;
+	}
+
+	/**
+	 * @return the payFlag
+	 */
+	public String getPayFlag() {
+		return payFlag;
+	}
+
+	/**
+	 * @param payFlag the payFlag to set
+	 */
+	public void setPayFlag(String payFlag) {
+		this.payFlag = payFlag;
+	}
+
+	/**
+	 * @return the payDate
+	 */
+	public LocalDateTime getPayDate() {
+		return payDate;
+	}
+
+	/**
+	 * @param payDate the payDate to set
+	 */
+	public void setPayDate(LocalDateTime payDate) {
+		this.payDate = payDate;
 	}
 
 	/**

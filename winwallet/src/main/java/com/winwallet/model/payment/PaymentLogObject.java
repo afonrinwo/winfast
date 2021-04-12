@@ -4,6 +4,7 @@
 package com.winwallet.model.payment;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -76,7 +77,7 @@ public class PaymentLogObject implements Serializable {
 	private String requestType;
 	
 	@Column(name = "requestIn", nullable = false)
-	private String requestIn;
+	private LocalDateTime requestIn;
 
 	/**
 	 * 
@@ -108,7 +109,7 @@ public class PaymentLogObject implements Serializable {
 	public PaymentLogObject(long uniqueId, String clientId, String msisdn, String msisdnNetwork, String msisdn2Credit,
 			String msisdn2CreditNetwork, String msisdn2Debit, String msisdn2DebitNetwork, String channel,
 			String fundSource, double amount, double lienAmount, int pndFlag, String pndReason, String narration,
-			String requestType, String requestIn) {
+			String requestType, LocalDateTime requestIn) {
 		super();
 		this.uniqueId = uniqueId;
 		this.clientId = clientId;
@@ -364,14 +365,14 @@ public class PaymentLogObject implements Serializable {
 	/**
 	 * @return the requestIn
 	 */
-	public String getRequestIn() {
+	public LocalDateTime getRequestIn() {
 		return requestIn;
 	}
 
 	/**
 	 * @param requestIn the requestIn to set
 	 */
-	public void setRequestIn(String requestIn) {
+	public void setRequestIn(LocalDateTime requestIn) {
 		this.requestIn = requestIn;
 	}
 

@@ -22,12 +22,11 @@ import com.winwallet.model.cashout.ATMCashOutRequest;
 import com.winwallet.model.cashout.AgentCashOutRequest;
 import com.winwallet.model.cashout.BankCashOutRequest;
 import com.winwallet.model.cashout.CashOutLogObject;
-import com.winwallet.repository.CashOutLogRepository;
+import com.winwallet.repository.CashOutRepository;
 import com.winwallet.repository.CustomerWalletRepository;
 import com.winwallet.repository.OfficeWalletRepository;
 import com.winwallet.utility.MessageUtility;
 import com.winwallet.utility.ResponseUtility;
-import com.winwallet.utility.SMSUtility;
 
 /**
  * @author Emmanuel Afonrinwo
@@ -41,7 +40,7 @@ public class CashOutManager {
 	private OfficeWalletObject officeWalletObject;
 
 	@Autowired
-	CashOutLogRepository cashOutLogRepository;
+	CashOutRepository cashOutRepository;
 
 	@Autowired
 	CustomerWalletRepository customerWalletRepository;
@@ -56,9 +55,6 @@ public class CashOutManager {
 	OfficeWalletRepository officeWalletRepository;
 
 	@Autowired
-	SMSUtility smsUtility;
-
-	@Autowired
 	ConfigurationObject configurationObject;
 
 	@Autowired
@@ -67,7 +63,7 @@ public class CashOutManager {
 	@Autowired
 	MessageUtility messageUtility;
 
-	public Response bankCashOut(BankCashOutRequest bankCashOutRequest, String requestIn) {
+	public Response bankCashOut(BankCashOutRequest bankCashOutRequest, LocalDateTime requestIn) {
 		TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
 		TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
 
@@ -83,7 +79,7 @@ public class CashOutManager {
 			cashOutLogObject.setRequestType("walletDebit");
 			cashOutLogObject.setNarration(bankCashOutRequest.getNarration());
 			cashOutLogObject.setRequestIn(requestIn);
-			cashOutLogObject = cashOutLogRepository.save(cashOutLogObject);
+			cashOutLogObject = cashOutRepository.save(cashOutLogObject);
 			
 			String code = utilityManager.walletRules(bankCashOutRequest.getMsisdn2Debit(), bankCashOutRequest.getPin(),
 					bankCashOutRequest.getAmount());
@@ -145,7 +141,7 @@ public class CashOutManager {
 		}
 	}
 
-	public Response agentCashOut(AgentCashOutRequest agentCashOutRequest, String requestIn) {
+	public Response agentCashOut(AgentCashOutRequest agentCashOutRequest, LocalDateTime requestIn) {
 		
 		TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
 		TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
@@ -163,7 +159,7 @@ public class CashOutManager {
 			cashOutLogObject.setRequestType("agentCashOut");
 			cashOutLogObject.setNarration(agentCashOutRequest.getNarration());
 			cashOutLogObject.setRequestIn(requestIn);
-			cashOutLogObject = cashOutLogRepository.save(cashOutLogObject);
+			cashOutLogObject = cashOutRepository.save(cashOutLogObject);
 			
 			String code = utilityManager.walletRules(agentCashOutRequest.getMsisdn2Debit(), agentCashOutRequest.getPin(),
 					agentCashOutRequest.getAmount());
@@ -184,8 +180,6 @@ public class CashOutManager {
 				customerWalletRepository.save(customerWalletObject);
 
 				//Pending Agent Account set up 
-
-				
 				officeWalletObject = new OfficeWalletObject();
 				officeWalletObject = officeWalletRepository.findByWalletNumber(configurationObject.getWalletPosition());
 				officeWalletObject.setAvailableBalance(

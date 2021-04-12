@@ -46,7 +46,7 @@ public class CashOutController {
 	@RequestMapping(value = "/bankCashOut", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response bankCashOut(HttpServletRequest request, @Validated @RequestBody BankCashOutRequest bankCashOutRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return cashOutManager.bankCashOut(bankCashOutRequest, LocalDateTime.now().toString());
+			return cashOutManager.bankCashOut(bankCashOutRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, bankCashOutRequest.getClientId(), 96);
 		}
@@ -55,7 +55,7 @@ public class CashOutController {
 	@RequestMapping(value = "/agentCashOut", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response agentCashOut(HttpServletRequest request, @Validated @RequestBody AgentCashOutRequest agentCashOutRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return cashOutManager.agentCashOut(agentCashOutRequest, LocalDateTime.now().toString());
+			return cashOutManager.agentCashOut(agentCashOutRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, agentCashOutRequest.getClientId(), 96);
 		}

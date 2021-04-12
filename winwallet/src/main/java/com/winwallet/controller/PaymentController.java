@@ -46,7 +46,7 @@ public class PaymentController {
 	@RequestMapping(value = "/walletDeposit", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response walletDeposit(HttpServletRequest request, @Validated @RequestBody WalletDepositRequest walletDepositRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return paymentManager.walletDeposit(walletDepositRequest, LocalDateTime.now().toString());
+			return paymentManager.walletDeposit(walletDepositRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, walletDepositRequest.getClientId(), 96);
 		}
@@ -55,7 +55,7 @@ public class PaymentController {
 	@RequestMapping(value = "/walletDebit", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response walletDebit(HttpServletRequest request, @Validated @RequestBody WalletDebitRequest walletDebitRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return paymentManager.walletDebit(walletDebitRequest, LocalDateTime.now().toString());
+			return paymentManager.walletDebit(walletDebitRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, walletDebitRequest.getClientId(), 96);
 		}
@@ -64,7 +64,7 @@ public class PaymentController {
 	@RequestMapping(value = "/walletCredit", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response walletCredit(HttpServletRequest request, @Validated @RequestBody WalletCreditRequest walletCreditRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return paymentManager.walletCredit(walletCreditRequest, LocalDateTime.now().toString());
+			return paymentManager.walletCredit(walletCreditRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, walletCreditRequest.getClientId(), 96);
 		}
@@ -73,7 +73,7 @@ public class PaymentController {
 	@RequestMapping(value = "/wallet2Wallet", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public @ResponseBody Response wallet2Wallet(HttpServletRequest request, @Validated @RequestBody Wallet2WalletRequest wallet2WalletRequest) {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
-			return paymentManager.wallet2Wallet(wallet2WalletRequest, LocalDateTime.now().toString());
+			return paymentManager.wallet2Wallet(wallet2WalletRequest, LocalDateTime.now());
 		} else {
 			return responseUtility.response(0L, wallet2WalletRequest.getClientId(), 96);
 		}

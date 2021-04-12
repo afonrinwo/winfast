@@ -23,7 +23,7 @@ import com.winwallet.model.Response;
 import com.winwallet.model.utility.EmailObject;
 import com.winwallet.model.utility.SMSObject;
 import com.winwallet.repository.EmailRepository;
-import com.winwallet.repository.SMSRepository;
+import com.winwallet.repository.MessageRepository;
 
 
 /**
@@ -47,7 +47,7 @@ public class MessageUtility {
 	ResponseUtility responseUtility;
 	
 	@Autowired
-	SMSRepository smsRepository;
+	MessageRepository smsRepository;
 	
 	@Autowired
 	EmailRepository emailRepository;

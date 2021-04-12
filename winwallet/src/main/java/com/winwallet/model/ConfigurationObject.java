@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties
-@PropertySource("file:D:\\Workspace-spring-tool-suite\\wallet\\configuration.properties")
+@PropertySource("file:D:\\Workspace-spring-tool-suite\\winwallet\\configuration.properties")
 //@PropertySource("file:/usr/wallet/configuration.properties")
 public class ConfigurationObject implements Serializable {
 	

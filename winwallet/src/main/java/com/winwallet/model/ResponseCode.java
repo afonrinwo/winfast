@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties
-@PropertySource("file:D:\\Workspace-spring-tool-suite\\wallet\\responseCode.properties")
+@PropertySource("file:D:\\Workspace-spring-tool-suite\\winwallet\\responseCode.properties")
 //@PropertySource("file:/usr/wallet/responseCode.properties")
 public class ResponseCode implements Serializable {
 	
