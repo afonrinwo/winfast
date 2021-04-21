@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties
-@PropertySource("file:D:\\Workspace-spring-tool-suite\\winfast\\configuration.properties")
-//@PropertySource("file:/usr/winfast/configuration.properties")
+//@PropertySource("file:D:\\Workspace-spring-tool-suite\\winfast\\configuration.properties")
+@PropertySource("file:/usr/winfast/configuration.properties")
 public class ConfigurationObject implements Serializable {
 	
 	/**

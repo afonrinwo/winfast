@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConfigurationProperties
-@PropertySource("file:D:\\Workspace-spring-tool-suite\\winfast\\responseCode.properties")
-//@PropertySource("file:/usr/winfast/responseCode.properties")
+//@PropertySource("file:D:\\Workspace-spring-tool-suite\\winfast\\responseCode.properties")
+@PropertySource("file:/usr/winfast/responseCode.properties")
 public class ResponseCode implements Serializable {
 	
 	/**
