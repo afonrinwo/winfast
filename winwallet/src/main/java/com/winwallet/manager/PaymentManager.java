@@ -78,8 +78,7 @@ public class PaymentManager {
 			paymentLogObject.setChannel(walletDepositRequest.getChannel());
 			paymentLogObject.setClientId(walletDepositRequest.getClientId());
 			paymentLogObject.setMsisdn(walletDepositRequest.getMsisdn());
-			paymentLogObject.setMsisdn2Credit(walletDepositRequest.getMsisdn2Credit());
-			paymentLogObject.setMsisdn2CreditNetwork(walletDepositRequest.getMsisdn2CreditNetwork());
+			paymentLogObject.setMsisdn2CreditNetwork(walletDepositRequest.getMsisdnNetwork());
 			paymentLogObject.setRequestType("WalletDeposit");
 			paymentLogObject.setRequestIn(requestIn);
 			paymentLogObject.setFundSource(walletDepositRequest.getFundSource());
@@ -100,9 +99,8 @@ public class PaymentManager {
 					officeWalletObject = officeWalletRepository.save(officeWalletObject);
 
 					customerWalletObject = new CustomerWalletObject();
-					customerWalletObject = customerWalletRepository
-							.findByMsisdn(walletDepositRequest.getMsisdn2Credit());
-					customerWalletObject.setMsisdnNetwork(walletDepositRequest.getMsisdn2CreditNetwork());
+					customerWalletObject = customerWalletRepository.findByMsisdn(walletDepositRequest.getMsisdn());
+					customerWalletObject.setMsisdnNetwork(walletDepositRequest.getMsisdnNetwork());
 					customerWalletObject.setAvailableBalance(customerWalletObject.getAvailableBalance()
 							+ Double.valueOf(walletDepositRequest.getAmount()));
 					customerWalletObject.setBookBalance(customerWalletObject.getBookBalance()
@@ -118,9 +116,10 @@ public class PaymentManager {
 					customerDataObject.setDateCreated(LocalDateTime.now());
 					customerDataObject.setMsisdn(customerWalletObject.getMsisdn());
 					customerDataObject.setMsisdnNetwork(customerWalletObject.getMsisdnNetwork());
-					
+
 					officeWalletObject = new OfficeWalletObject();
-					officeWalletObject = officeWalletRepository.findByWalletNumber(configurationObject.getWalletPosition());
+					officeWalletObject = officeWalletRepository
+							.findByWalletNumber(configurationObject.getWalletPosition());
 					officeWalletObject.setAvailableBalance(
 							officeWalletObject.getAvailableBalance() + walletDepositRequest.getAmount());
 					officeWalletObject
@@ -137,7 +136,7 @@ public class PaymentManager {
 					logger.error("walletDeposit :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n"
 							+ ex.getStackTrace());
 					transactionManager.rollback(transactionStatus);
-					return responseUtility.response(paymentLogObject.getUniqueId(), paymentLogObject.getClientId(), 99);
+					return responseUtility.response(0L, paymentLogObject.getClientId(), 99);
 				}
 
 			} else {
@@ -160,11 +159,11 @@ public class PaymentManager {
 				customerWalletObject.setDateCreated(LocalDateTime.now());
 				customerWalletObject.setLastEditedDate(LocalDateTime.now());
 				customerWalletObject.setLien(0.00);
-				customerWalletObject.setMsisdn(walletDepositRequest.getMsisdn2Credit());
-				customerWalletObject.setMsisdnNetwork(walletDepositRequest.getMsisdn2CreditNetwork());
+				customerWalletObject.setMsisdn(walletDepositRequest.getMsisdn());
+				customerWalletObject.setMsisdnNetwork(walletDepositRequest.getMsisdnNetwork());
 				customerWalletObject.setPnd(0);
 				customerWalletRepository.save(customerWalletObject);
-				
+
 				officeWalletObject = new OfficeWalletObject();
 				officeWalletObject = officeWalletRepository.findByWalletNumber(configurationObject.getWalletPosition());
 				officeWalletObject.setAvailableBalance(
@@ -178,8 +177,8 @@ public class PaymentManager {
 				transactionManager.commit(transactionStatus);
 
 				// SMS notification
-				messageUtility.sendsms(paymentLogObject.getClientId(), walletDepositRequest.getMsisdn2CreditNetwork(), walletDepositRequest.getMsisdn2Credit(), 
-						"", requestIn);
+				messageUtility.sendsms(paymentLogObject.getClientId(), walletDepositRequest.getMsisdnNetwork(),
+						walletDepositRequest.getMsisdn(), "", requestIn);
 
 				return responseUtility.response(paymentLogObject.getUniqueId(), paymentLogObject.getClientId(), 0);
 			}
@@ -232,13 +231,12 @@ public class PaymentManager {
 			officeWalletObject.setDateCreated(officeWalletObject.getDateCreated());
 			officeWalletObject.setLastEditedDate(LocalDateTime.now());
 			officeWalletObject = officeWalletRepository.save(officeWalletObject);
-			
+
 			officeWalletObject = new OfficeWalletObject();
 			officeWalletObject = officeWalletRepository.findByWalletNumber(configurationObject.getWalletPosition());
-			officeWalletObject.setAvailableBalance(
-					officeWalletObject.getAvailableBalance() + walletCreditRequest.getAmount());
 			officeWalletObject
-					.setBookBalance(officeWalletObject.getBookBalance() + walletCreditRequest.getAmount());
+					.setAvailableBalance(officeWalletObject.getAvailableBalance() + walletCreditRequest.getAmount());
+			officeWalletObject.setBookBalance(officeWalletObject.getBookBalance() + walletCreditRequest.getAmount());
 			officeWalletObject.setDateCreated(officeWalletObject.getDateCreated());
 			officeWalletObject.setLastEditedDate(LocalDateTime.now());
 			officeWalletObject = officeWalletRepository.save(officeWalletObject);
@@ -299,13 +297,12 @@ public class PaymentManager {
 				officeWalletObject.setDateCreated(officeWalletObject.getDateCreated());
 				officeWalletObject.setLastEditedDate(LocalDateTime.now());
 				officeWalletObject = officeWalletRepository.save(officeWalletObject);
-				
+
 				officeWalletObject = new OfficeWalletObject();
 				officeWalletObject = officeWalletRepository.findByWalletNumber(configurationObject.getWalletPosition());
-				officeWalletObject.setAvailableBalance(
-						officeWalletObject.getAvailableBalance() - walletDebitRequest.getAmount());
 				officeWalletObject
-						.setBookBalance(officeWalletObject.getBookBalance() - walletDebitRequest.getAmount());
+						.setAvailableBalance(officeWalletObject.getAvailableBalance() - walletDebitRequest.getAmount());
+				officeWalletObject.setBookBalance(officeWalletObject.getBookBalance() - walletDebitRequest.getAmount());
 				officeWalletObject.setDateCreated(officeWalletObject.getDateCreated());
 				officeWalletObject.setLastEditedDate(LocalDateTime.now());
 				officeWalletObject = officeWalletRepository.save(officeWalletObject);
@@ -348,46 +345,54 @@ public class PaymentManager {
 			paymentLogObject.setNarration(wallet2WalletRequest.getNarration());
 			paymentLogObject.setRequestIn(requestIn);
 			paymentLogObject = paymentRepository.save(paymentLogObject);
-			
-			String code = utilityManager.walletRules(wallet2WalletRequest.getMsisdn2Debit(), wallet2WalletRequest.getPin(),
-					wallet2WalletRequest.getAmount());
-			switch (code) {
-			case "00":
-				customerWalletObject = new CustomerWalletObject();
-				customerWalletObject = customerWalletRepository.findByMsisdn(wallet2WalletRequest.getMsisdn2Debit());
-				customerWalletObject.setAvailableBalance(
-						customerWalletObject.getAvailableBalance() - wallet2WalletRequest.getAmount());
-				customerWalletObject.setBookBalance(
-						customerWalletObject.getBookBalance() - wallet2WalletRequest.getAmount());
-				customerWalletObject.setDateCreated(customerWalletObject.getDateCreated());
-				customerWalletObject.setLastEditedDate(LocalDateTime.now());
-				customerWalletObject.setLien(customerWalletObject.getLien());
-				customerWalletObject.setMsisdn(customerWalletObject.getMsisdn());
-				customerWalletObject.setMsisdnNetwork(customerWalletObject.getMsisdnNetwork());
-				customerWalletObject.setPnd(customerWalletObject.getPnd());
-				customerWalletRepository.save(customerWalletObject);
 
-				customerWalletObject = new CustomerWalletObject();
-				customerWalletObject = customerWalletRepository
-						.findByMsisdn(wallet2WalletRequest.getMsisdnCredit());
-				customerWalletObject.setAvailableBalance(
-						customerWalletObject.getAvailableBalance() + wallet2WalletRequest.getAmount());
-				customerWalletObject.setBookBalance(
-						customerWalletObject.getBookBalance() + wallet2WalletRequest.getAmount());
-				customerWalletObject.setDateCreated(customerWalletObject.getDateCreated());
-				customerWalletObject.setLastEditedDate(LocalDateTime.now());
-				customerWalletObject.setLien(customerWalletObject.getLien());
-				customerWalletObject.setMsisdn(customerWalletObject.getMsisdn());
-				customerWalletObject.setMsisdnNetwork(customerWalletObject.getMsisdnNetwork());
-				customerWalletObject.setPnd(customerWalletObject.getPnd());
-				customerWalletRepository.save(customerWalletObject);
+			if (wallet2WalletRequest.getMsisdn2Debit().equals(wallet2WalletRequest.getMsisdnCredit())) {
+				return responseUtility.response(paymentLogObject.getUniqueId(), wallet2WalletRequest.getClientId(), 39);
+			} else {
 
-				return responseUtility.response(paymentLogObject.getUniqueId(),
-						wallet2WalletRequest.getClientId(), 0);
+				String code = utilityManager.walletRules(wallet2WalletRequest.getMsisdn2Debit(),
+						wallet2WalletRequest.getPin(), wallet2WalletRequest.getAmount());
+				switch (code) {
+				case "00":
+					customerWalletObject = new CustomerWalletObject();
+					customerWalletObject = customerWalletRepository
+							.findByMsisdn(wallet2WalletRequest.getMsisdn2Debit());
+					customerWalletObject.setAvailableBalance(
+							customerWalletObject.getAvailableBalance() - wallet2WalletRequest.getAmount());
+					customerWalletObject
+							.setBookBalance(customerWalletObject.getBookBalance() - wallet2WalletRequest.getAmount());
+					customerWalletObject.setDateCreated(customerWalletObject.getDateCreated());
+					customerWalletObject.setLastEditedDate(LocalDateTime.now());
+					customerWalletObject.setLien(customerWalletObject.getLien());
+					customerWalletObject.setMsisdn(customerWalletObject.getMsisdn());
+					customerWalletObject.setMsisdnNetwork(customerWalletObject.getMsisdnNetwork());
+					customerWalletObject.setPnd(customerWalletObject.getPnd());
+					customerWalletRepository.save(customerWalletObject);
 
-			default:
-				return responseUtility.response(paymentLogObject.getUniqueId(), wallet2WalletRequest.getClientId(),
-						Integer.valueOf(code));
+					customerWalletObject = new CustomerWalletObject();
+					customerWalletObject = customerWalletRepository
+							.findByMsisdn(wallet2WalletRequest.getMsisdnCredit());
+					customerWalletObject.setAvailableBalance(
+							customerWalletObject.getAvailableBalance() + wallet2WalletRequest.getAmount());
+					customerWalletObject
+							.setBookBalance(customerWalletObject.getBookBalance() + wallet2WalletRequest.getAmount());
+					customerWalletObject.setDateCreated(customerWalletObject.getDateCreated());
+					customerWalletObject.setLastEditedDate(LocalDateTime.now());
+					customerWalletObject.setLien(customerWalletObject.getLien());
+					customerWalletObject.setMsisdn(customerWalletObject.getMsisdn());
+					customerWalletObject.setMsisdnNetwork(customerWalletObject.getMsisdnNetwork());
+					customerWalletObject.setPnd(customerWalletObject.getPnd());
+					customerWalletRepository.save(customerWalletObject);
+					
+					transactionManager.commit(transactionStatus);
+
+ 					return responseUtility.response(paymentLogObject.getUniqueId(), wallet2WalletRequest.getClientId(),
+							0);
+
+				default:
+					return responseUtility.response(paymentLogObject.getUniqueId(), wallet2WalletRequest.getClientId(),
+							Integer.valueOf(code));
+				}
 			}
 
 		} catch (Exception ex) {

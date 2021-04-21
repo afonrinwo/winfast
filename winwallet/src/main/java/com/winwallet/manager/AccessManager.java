@@ -4,6 +4,8 @@
 package com.winwallet.manager;
 
 import java.time.LocalDateTime;
+import java.util.Random;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +32,14 @@ import com.winwallet.model.access.ResetAgentPinRequest;
 import com.winwallet.model.access.ResetPinRequest;
 import com.winwallet.model.account.AgentWalletObject;
 import com.winwallet.model.account.CustomerWalletObject;
+import com.winwallet.repository.AccessLogRepository;
 import com.winwallet.repository.AccessRepository;
 import com.winwallet.repository.AgentRepository;
 import com.winwallet.repository.AgentWalletRepository;
 import com.winwallet.repository.CustomerDataRepository;
 import com.winwallet.repository.CustomerWalletRepository;
 import com.winwallet.utility.AuthUtility;
+import com.winwallet.utility.MessageUtility;
 import com.winwallet.utility.ResponseUtility;
 
 /**
@@ -74,6 +78,9 @@ public class AccessManager {
 	AccessRepository accessRepository;
 
 	@Autowired
+	AccessLogRepository accessLogRepository;
+
+	@Autowired
 	AgentRepository agentRepository;
 
 	@Autowired
@@ -81,6 +88,9 @@ public class AccessManager {
 
 	@Autowired
 	ResponseUtility responseUtility;
+
+	@Autowired
+	MessageUtility messageUtility;
 
 	public Response createWallet(CreateWalletRequest createWalletRequest, LocalDateTime requestIn) {
 
@@ -96,7 +106,7 @@ public class AccessManager {
 			accessLogObject.setMsisdnNetwork(createWalletRequest.getMsisdnNetwork());
 			accessLogObject.setRequestType("createWallet");
 			accessLogObject.setRequestIn(requestIn);
-			accessLogObject = accessRepository.save(accessLogObject);
+			accessLogObject = accessLogRepository.save(accessLogObject);
 
 			customerDataObject = new CustomerDataObject();
 			customerDataObject.setDateCreated(LocalDateTime.now());
@@ -125,7 +135,7 @@ public class AccessManager {
 
 			platformTransactionManager.commit(transactionStatus);
 
-			return responseUtility.response(accessCodesObject.getUniqueId(), createWalletRequest.getClientId(), 0);
+			return responseUtility.response(accessLogObject.getUniqueId(), createWalletRequest.getClientId(), 0);
 
 		} catch (Exception ex) {
 			logger.error("AccessManager :: createWallet :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n"
@@ -150,7 +160,7 @@ public class AccessManager {
 			accessLogObject.setMsisdnNetwork(createPinRequest.getMsisdnNetwork());
 			accessLogObject.setRequestType("createPin");
 			accessLogObject.setRequestIn(requestIn);
-			accessLogObject = accessRepository.save(accessLogObject);
+			accessLogObject = accessLogRepository.save(accessLogObject);
 
 			customerDataObject = new CustomerDataObject();
 			customerDataObject = customerDataRepository.findByMsisdn(createPinRequest.getMsisdn());
@@ -182,10 +192,10 @@ public class AccessManager {
 			accessCodesObject.setHashText(authUtility.encryptString(createPinRequest.getPin()));
 			accessCodesObject.setLastEditedDate(LocalDateTime.now());
 			accessCodesObject.setMsisdn(createPinRequest.getMsisdn());
-			accessCodesObject.setUniqueId(customerDataObject.getUniqueId());
+			accessCodesObject.setUniqueId(accessCodesObject.getUniqueId());
 			accessCodesObject = accessRepository.save(accessCodesObject);
 
-			return responseUtility.response(0L, createPinRequest.getClientId(), 0);
+			return responseUtility.response(accessLogObject.getUniqueId(), createPinRequest.getClientId(), 0);
 
 		} catch (Exception ex) {
 			logger.error("AccessManager :: createPin :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n"
@@ -208,28 +218,32 @@ public class AccessManager {
 			accessLogObject.setMsisdnNetwork(changePinRequest.getMsisdnNetwork());
 			accessLogObject.setRequestType("changePin");
 			accessLogObject.setRequestIn(requestIn);
-			accessLogObject = accessRepository.save(accessLogObject);
+			accessLogObject = accessLogRepository.save(accessLogObject);
 
 			accessCodesObject = new AccessCodesObject();
 			accessCodesObject = accessRepository.findByMsisdn(changePinRequest.getMsisdn());
-			if (accessCodesObject.getUniqueId() > 0) {
-				if (authUtility.encryptString(changePinRequest.getOldPassword())
-						.equals(accessCodesObject.getHashText())) {
-					accessCodesObject.setDateCreated(LocalDateTime.now());
-					accessCodesObject.setHashText(authUtility.encryptString(changePinRequest.getNewPassword()));
-					accessCodesObject.setLastEditedDate(LocalDateTime.now());
-					accessCodesObject.setUniqueId(customerDataObject.getUniqueId());
-					accessCodesObject = accessRepository.save(accessCodesObject);
+			if (accessCodesObject == null) {
 
-					return responseUtility.response(0L, changePinRequest.getClientId(), 0);
-				} else {
-					logger.error("AccessManager :: changePin :: Invalid Customer Id or Password.");
-					return responseUtility.response(0L, createWalletRequest.getClientId(), 34);
-				}
+				logger.error("AccessManager :: changePin :: Invalid Customer Id or Password.");
+				return responseUtility.response(accessLogObject.getUniqueId(), changePinRequest.getClientId(), 34);
 
 			} else {
-				logger.error("AccessManager :: changePin :: Invalid Customer Id or Password.");
-				return responseUtility.response(0L, changePinRequest.getClientId(), 34);
+
+				if (authUtility.encryptString(changePinRequest.getOldPin())
+						.equals(accessCodesObject.getHashText())) {
+					accessCodesObject.setDateCreated(LocalDateTime.now());
+					accessCodesObject.setHashText(authUtility.encryptString(changePinRequest.getNewPin()));
+					accessCodesObject.setLastEditedDate(LocalDateTime.now());
+					accessCodesObject.setMsisdn(changePinRequest.getMsisdn());
+					accessCodesObject.setUniqueId(accessCodesObject.getUniqueId());
+					accessCodesObject = accessRepository.save(accessCodesObject);
+
+					return responseUtility.response(accessLogObject.getUniqueId(), changePinRequest.getClientId(), 0);
+				} else {
+					logger.error("AccessManager :: changePin :: Invalid Customer Id or Password.");
+					return responseUtility.response(accessLogObject.getUniqueId(), changePinRequest.getClientId(), 34);
+				}
+
 			}
 		} catch (Exception ex) {
 			logger.error("AccessManager :: changePin :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n"
@@ -239,6 +253,7 @@ public class AccessManager {
 	}
 
 	public Response resetPin(ResetPinRequest resetPinRequest, LocalDateTime localDateTime) {
+
 		try {
 
 			accessLogObject = new AccessLogObject();
@@ -248,22 +263,32 @@ public class AccessManager {
 			accessLogObject.setMsisdnNetwork(resetPinRequest.getMsisdnNetwork());
 			accessLogObject.setRequestType("resetPin");
 			accessLogObject.setRequestIn(localDateTime);
-			accessLogObject = accessRepository.save(accessLogObject);
+			accessLogObject = accessLogRepository.save(accessLogObject);
 
 			accessCodesObject = new AccessCodesObject();
 			accessCodesObject = accessRepository.findByMsisdn(resetPinRequest.getMsisdn());
-			if (accessCodesObject.getUniqueId() > 0) {
-					accessCodesObject.setDateCreated(LocalDateTime.now());
-					accessCodesObject.setHashText(authUtility.encryptString(resetPinRequest.getMsisdn() + "" + resetPinRequest.getMsisdnNetwork()));
-					accessCodesObject.setLastEditedDate(LocalDateTime.now());
-					accessCodesObject.setUniqueId(customerDataObject.getUniqueId());
-					accessCodesObject = accessRepository.save(accessCodesObject);
-
-					return responseUtility.response(0L, resetPinRequest.getClientId(), 0);
+			if (accessCodesObject == null) {
+				logger.error("AccessManager :: resetPin :: Invalid Customer Id or Password.");
+				return responseUtility.response(accessLogObject.getUniqueId(), resetPinRequest.getClientId(), 34);
 
 			} else {
-				logger.error("AccessManager :: resetPin :: Invalid Customer Id or Password.");
-				return responseUtility.response(0L, resetPinRequest.getClientId(), 34);
+				Random rand = new Random();
+				int generatedPin = 0;
+				for (int i1 = 1; i1 <= 10; i1++) {
+					generatedPin = rand.nextInt((9999 - 100) + 1) + 10;
+				}
+				accessCodesObject.setDateCreated(LocalDateTime.now());
+				accessCodesObject.setHashText(authUtility.encryptString(String.valueOf(0000)));
+				accessCodesObject.setMsisdn(accessCodesObject.getMsisdn());
+				accessCodesObject.setLastEditedDate(LocalDateTime.now());
+				accessCodesObject.setUniqueId(accessCodesObject.getUniqueId());
+				accessCodesObject = accessRepository.save(accessCodesObject);
+
+				messageUtility.sendsms(resetPinRequest.getClientId(), resetPinRequest.getMsisdnNetwork(),
+						accessCodesObject.getMsisdn(), "Your new passwod is " + generatedPin, LocalDateTime.now());
+
+				return responseUtility.response(accessLogObject.getUniqueId(), resetPinRequest.getClientId(), 0);
+
 			}
 		} catch (Exception ex) {
 			logger.error("AccessManager :: resetPin :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n"
@@ -296,7 +321,7 @@ public class AccessManager {
 			accessLogObject.setMsisdnNetwork(accessLogObject.getMsisdnNetwork());
 			accessLogObject.setRequestType("createAgentWallet");
 			accessLogObject.setRequestIn(LocalDateTime.now());
-			accessLogObject = accessRepository.save(accessLogObject);
+			accessLogObject = accessLogRepository.save(accessLogObject);
 
 			agentDataObject = new AgentDataObject();
 			agentDataObject.setAccountName(createAgentWalletRequest.getAccountName());
@@ -332,13 +357,11 @@ public class AccessManager {
 			agentAccessCodesObject.setHashText(authUtility.encryptString(createWalletRequest.getPin()));
 			agentAccessCodesObject.setLastEditedDate(customerDataObject.getDateCreated());
 			agentAccessCodesObject.setMsisdn(customerDataObject.getMsisdn());
-			agentAccessCodesObject.setUniqueId(customerDataObject.getUniqueId());
 			agentAccessCodesObject = agentRepository.save(agentAccessCodesObject);
 
 			platformTransactionManager.commit(transactionStatus);
 
-			return responseUtility.response(agentAccessCodesObject.getUniqueId(),
-					createAgentWalletRequest.getClientId(), 0);
+			return responseUtility.response(accessLogObject.getUniqueId(), createAgentWalletRequest.getClientId(), 0);
 
 		} catch (Exception ex) {
 			logger.error("AccessManager :: createAgentWallet :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage()
@@ -363,7 +386,7 @@ public class AccessManager {
 			accessLogObject.setMsisdnNetwork(createAgentPinRequest.getMsisdnNetwork());
 			accessLogObject.setRequestType("createPin");
 			accessLogObject.setRequestIn(requestIn);
-			accessLogObject = accessRepository.save(accessLogObject);
+			accessLogObject = accessLogRepository.save(accessLogObject);
 
 			agentDataObject = new AgentDataObject();
 			agentDataObject = agentRepository.findByMsisdn(createAgentPinRequest.getMsisdn());
@@ -395,10 +418,9 @@ public class AccessManager {
 			agentAccessCodesObject.setHashText(authUtility.encryptString(createAgentPinRequest.getPin()));
 			agentAccessCodesObject.setLastEditedDate(LocalDateTime.now());
 			agentAccessCodesObject.setMsisdn(createAgentPinRequest.getMsisdn());
-			agentAccessCodesObject.setUniqueId(agentDataObject.getUniqueId());
 			agentAccessCodesObject = agentRepository.save(agentAccessCodesObject);
 
-			return responseUtility.response(0L, createAgentPinRequest.getClientId(), 0);
+			return responseUtility.response(accessLogObject.getUniqueId(), createAgentPinRequest.getClientId(), 0);
 
 		} catch (Exception ex) {
 			logger.error("AccessManager :: createAgentPin :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage()
@@ -421,30 +443,35 @@ public class AccessManager {
 			accessLogObject.setMsisdnNetwork(changeAgentPinRequest.getMsisdnNetwork());
 			accessLogObject.setRequestType("changeAgentPin");
 			accessLogObject.setRequestIn(requestIn);
-			accessLogObject = accessRepository.save(accessLogObject);
+			accessLogObject = accessLogRepository.save(accessLogObject);
 
 			accessCodesObject = new AccessCodesObject();
 			accessCodesObject = accessRepository.findByMsisdn(changeAgentPinRequest.getMsisdn());
-			if (accessCodesObject.getUniqueId() > 0) {
+			if (accessCodesObject == null) {
+
+				logger.error("AccessManager :: changeAgentPin :: Invalid Customer Id or Password.");
+				return responseUtility.response(accessLogObject.getUniqueId(), createWalletRequest.getClientId(), 34);
+
+			} else {
 				if (authUtility.encryptString(changeAgentPinRequest.getOldPassword())
 						.equals(accessCodesObject.getHashText())) {
 					accessCodesObject.setDateCreated(LocalDateTime.now());
 					accessCodesObject.setHashText(authUtility.encryptString(changeAgentPinRequest.getNewPassword()));
 					accessCodesObject.setLastEditedDate(LocalDateTime.now());
+					accessCodesObject.setUniqueId(accessLogObject.getUniqueId());
 					accessCodesObject = accessRepository.save(accessCodesObject);
-					return responseUtility.response(0L, changeAgentPinRequest.getClientId(), 0);
+					
+					return responseUtility.response(accessLogObject.getUniqueId(), changeAgentPinRequest.getClientId(),
+							0);
 				} else {
 					logger.error("AccessManager :: changeAgentPin :: Invalid Customer Id or Password.");
-					return responseUtility.response(0L, createWalletRequest.getClientId(), 34);
+					return responseUtility.response(accessLogObject.getUniqueId(), createWalletRequest.getClientId(),
+							34);
 				}
-
-			} else {
-				logger.error("AccessManager :: changeAgentPin :: Invalid Customer Id or Password.");
-				return responseUtility.response(0L, createWalletRequest.getClientId(), 34);
 			}
 		} catch (Exception ex) {
-			logger.error("AccessManager :: changeAgentPin :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n"
-					+ ex.getStackTrace());
+			logger.error("AccessManager :: changeAgentPin :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage()
+					+ "\n" + ex.getStackTrace());
 			return responseUtility.response(0L, createWalletRequest.getClientId(), 99);
 		}
 	}

@@ -17,9 +17,7 @@ public class WalletBalanceResponse implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	@Column(name = "uniqueId", nullable = false)
-	private long uniqueId;
+
 	
 	@Column(name = "clientId", nullable = false)
 	private String clientId;
@@ -54,29 +52,14 @@ public class WalletBalanceResponse implements Serializable {
 	 * @param responseCode
 	 * @param responseMessage
 	 */
-	public WalletBalanceResponse(long uniqueId, String clientId, String msisdn, double balance, String responseCode,
+	public WalletBalanceResponse(String clientId, String msisdn, double balance, String responseCode,
 			String responseMessage) {
 		super();
-		this.uniqueId = uniqueId;
 		this.clientId = clientId;
 		this.msisdn = msisdn;
 		this.balance = balance;
 		this.responseCode = responseCode;
 		this.responseMessage = responseMessage;
-	}
-
-	/**
-	 * @return the uniqueId
-	 */
-	public long getUniqueId() {
-		return uniqueId;
-	}
-
-	/**
-	 * @param uniqueId the uniqueId to set
-	 */
-	public void setUniqueId(long uniqueId) {
-		this.uniqueId = uniqueId;
 	}
 
 	/**

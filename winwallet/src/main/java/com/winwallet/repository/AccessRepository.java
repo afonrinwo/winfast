@@ -6,19 +6,16 @@ package com.winwallet.repository;
 import java.io.Serializable;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-import com.winwallet.model.AccessLogObject;
 import com.winwallet.model.access.AccessCodesObject;
-import com.winwallet.model.access.AgentAccessCodesObject;
 
 /**
  * @author Emmanuel Afonrinwo
  *
  */
+@Repository
 public interface AccessRepository extends CrudRepository<AccessCodesObject, Serializable> {
 
 	AccessCodesObject findByMsisdn(String msisdn);
-
-	AccessLogObject save(AccessLogObject accessLogObject);
-
 }

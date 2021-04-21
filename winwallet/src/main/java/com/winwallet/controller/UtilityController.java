@@ -59,7 +59,7 @@ public class UtilityController {
 		if (authUtility.accessValidation(request.getHeader("Authorization"), request.getHeader("app-id"))) {
 			return utilityManager.walletBalance(walletBalanceRequest, LocalDateTime.now());
 		} else {
-			return responseUtility.walletBalanceResponse(0L, walletBalanceRequest.getClientId(), 96);
+			return responseUtility.walletBalanceResponse(walletBalanceRequest.getClientId(), walletBalanceRequest.getMsisdn(), 96);
 		}
 	}
 

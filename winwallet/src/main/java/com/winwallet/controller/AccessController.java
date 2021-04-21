@@ -25,10 +25,6 @@ import com.winwallet.model.access.CreatePinRequest;
 import com.winwallet.model.access.CreateWalletRequest;
 import com.winwallet.model.access.ResetAgentPinRequest;
 import com.winwallet.model.access.ResetPinRequest;
-import com.winwallet.model.balance.WalletBalanceRequest;
-import com.winwallet.model.balance.WalletBalanceResponse;
-import com.winwallet.model.enquiry.WalletEnquiryRequest;
-import com.winwallet.model.enquiry.WalletEnquiryResponse;
 import com.winwallet.utility.AuthUtility;
 import com.winwallet.utility.ResponseUtility;
 

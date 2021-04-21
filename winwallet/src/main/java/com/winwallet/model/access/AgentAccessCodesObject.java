@@ -8,8 +8,6 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -28,9 +26,6 @@ public class AgentAccessCodesObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@Column(name="uniqueId", nullable = false)
-	private long uniqueId;
-	
 	@Column(name="msisdn", nullable = false)
 	private String msisdn;
 
@@ -52,35 +47,20 @@ public class AgentAccessCodesObject implements Serializable {
 	}
 
 	/**
-	 * @param uniqueId
 	 * @param msisdn
 	 * @param hashText
 	 * @param dateCreated
 	 * @param lastEditedDate
 	 */
-	public AgentAccessCodesObject(long uniqueId, String msisdn, String hashText, LocalDateTime dateCreated,
+	public AgentAccessCodesObject(String msisdn, String hashText, LocalDateTime dateCreated,
 			LocalDateTime lastEditedDate) {
 		super();
-		this.uniqueId = uniqueId;
 		this.msisdn = msisdn;
 		this.hashText = hashText;
 		this.dateCreated = dateCreated;
 		this.lastEditedDate = lastEditedDate;
 	}
 
-	/**
-	 * @return the uniqueId
-	 */
-	public long getUniqueId() {
-		return uniqueId;
-	}
-
-	/**
-	 * @param uniqueId the uniqueId to set
-	 */
-	public void setUniqueId(long uniqueId) {
-		this.uniqueId = uniqueId;
-	}
 
 	/**
 	 * @return the msisdn

@@ -25,11 +25,8 @@ public class WalletDepositRequest implements Serializable {
 	@Column(name = "msisdn", nullable = false)
 	private String msisdn;
 	
-	@Column(name = "msisdn2Credit", nullable = false)
-	private String msisdn2Credit;
-	
-	@Column(name = "msisdn2CreditNetwork", nullable = false)
-	private String msisdn2CreditNetwork;
+	@Column(name = "msisdnNetwork", nullable = false)
+	private String msisdnNetwork;
 	
 	@Column(name = "amount", nullable = false)
 	private double amount;
@@ -51,29 +48,20 @@ public class WalletDepositRequest implements Serializable {
 	/**
 	 * @param clientId
 	 * @param msisdn
-	 * @param msisdn2Credit
-	 * @param msisdn2CreditNetwork
+	 * @param msisdnNetwork
 	 * @param amount
 	 * @param channel
 	 * @param fundSource
 	 */
-	public WalletDepositRequest(String clientId, String msisdn, String msisdn2Credit, String msisdn2CreditNetwork,
-			double amount, String channel, String fundSource) {
+	public WalletDepositRequest(String clientId, String msisdn, String msisdnNetwork, double amount, String channel,
+			String fundSource) {
 		super();
 		this.clientId = clientId;
 		this.msisdn = msisdn;
-		this.msisdn2Credit = msisdn2Credit;
-		this.msisdn2CreditNetwork = msisdn2CreditNetwork;
+		this.msisdnNetwork = msisdnNetwork;
 		this.amount = amount;
 		this.channel = channel;
 		this.fundSource = fundSource;
-	}
-
-	/**
-	 * @return the serialversionuid
-	 */
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 
 	/**
@@ -105,31 +93,17 @@ public class WalletDepositRequest implements Serializable {
 	}
 
 	/**
-	 * @return the msisdn2Credit
+	 * @return the msisdnNetwork
 	 */
-	public String getMsisdn2Credit() {
-		return msisdn2Credit;
+	public String getMsisdnNetwork() {
+		return msisdnNetwork;
 	}
 
 	/**
-	 * @param msisdn2Credit the msisdn2Credit to set
+	 * @param msisdnNetwork the msisdnNetwork to set
 	 */
-	public void setMsisdn2Credit(String msisdn2Credit) {
-		this.msisdn2Credit = msisdn2Credit;
-	}
-
-	/**
-	 * @return the msisdn2CreditNetwork
-	 */
-	public String getMsisdn2CreditNetwork() {
-		return msisdn2CreditNetwork;
-	}
-
-	/**
-	 * @param msisdn2CreditNetwork the msisdn2CreditNetwork to set
-	 */
-	public void setMsisdn2CreditNetwork(String msisdn2CreditNetwork) {
-		this.msisdn2CreditNetwork = msisdn2CreditNetwork;
+	public void setMsisdnNetwork(String msisdnNetwork) {
+		this.msisdnNetwork = msisdnNetwork;
 	}
 
 	/**
@@ -172,6 +146,13 @@ public class WalletDepositRequest implements Serializable {
 	 */
 	public void setFundSource(String fundSource) {
 		this.fundSource = fundSource;
+	}
+
+	/**
+	 * @return the serialversionuid
+	 */
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 }

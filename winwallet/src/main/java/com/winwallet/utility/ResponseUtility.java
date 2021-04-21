@@ -65,23 +65,22 @@ public class ResponseUtility {
 		return walletEnquiryResponse;
 	}
 
-	public WalletBalanceResponse walletBalanceResponse(long uniqueId, String clientId, int code) {
+	public WalletBalanceResponse walletBalanceResponse(String clientId, String msisdn, int code) {
 		stringBuilder = new StringBuilder();
 		walletBalanceResponse = new WalletBalanceResponse();
-		walletBalanceResponse.setUniqueId(uniqueId);
 		walletBalanceResponse.setClientId(clientId);
+		walletBalanceResponse.setMsisdn(msisdn);
 		walletBalanceResponse.setResponseCode(String.format("%03d", code));
 		walletBalanceResponse.setResponseMessage(
 				stringBuilder.append(responseCode.getResponse_message()[Integer.valueOf(code)]).toString());
 		return walletBalanceResponse;
 	}
 
-	public WalletBalanceResponse walletBalanceResponse(long uniqueId, CustomerWalletObject customerWalletObject,
-			String clientId, int code) {
+	public WalletBalanceResponse walletBalanceResponse(CustomerWalletObject customerWalletObject, String clientId, int code) {
 		stringBuilder = new StringBuilder();
 		walletBalanceResponse = new WalletBalanceResponse();
-		walletBalanceResponse.setUniqueId(uniqueId);
 		walletBalanceResponse.setClientId(clientId);
+		walletBalanceResponse.setMsisdn(customerWalletObject.getMsisdn());
 		walletBalanceResponse.setBalance(customerWalletObject.getAvailableBalance());
 		walletBalanceResponse.setResponseCode(String.format("%03d", code));
 		walletBalanceResponse.setResponseMessage(

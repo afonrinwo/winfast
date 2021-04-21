@@ -30,11 +30,11 @@ public class ChangePinRequest implements Serializable {
 	@Column(name = "msisdnNetwork", nullable = false)
 	private String msisdnNetwork;
 	
-	@Column(name = "oldPassword", nullable = false)
-	private String oldPassword;
+	@Column(name = "oldPin", nullable = false)
+	private String oldPin;
 	
-	@Column(name = "newPassword", nullable = false)
-	private String newPassword;
+	@Column(name = "newPin", nullable = false)
+	private String newPin;
 
 	/**
 	 * 
@@ -49,18 +49,18 @@ public class ChangePinRequest implements Serializable {
 	 * @param channel
 	 * @param msisdn
 	 * @param msisdnNetwork
-	 * @param oldPassword
-	 * @param newPassword
+	 * @param oldPin
+	 * @param newPin
 	 */
-	public ChangePinRequest(String clientId, String channel, String msisdn, String msisdnNetwork, String oldPassword,
-			String newPassword) {
+	public ChangePinRequest(String clientId, String channel, String msisdn, String msisdnNetwork, String oldPin,
+			String newPin) {
 		super();
 		this.clientId = clientId;
 		this.channel = channel;
 		this.msisdn = msisdn;
 		this.msisdnNetwork = msisdnNetwork;
-		this.oldPassword = oldPassword;
-		this.newPassword = newPassword;
+		this.oldPin = oldPin;
+		this.newPin = newPin;
 	}
 
 	/**
@@ -120,31 +120,31 @@ public class ChangePinRequest implements Serializable {
 	}
 
 	/**
-	 * @return the oldPassword
+	 * @return the oldPin
 	 */
-	public String getOldPassword() {
-		return oldPassword;
+	public String getOldPin() {
+		return oldPin;
 	}
 
 	/**
-	 * @param oldPassword the oldPassword to set
+	 * @param oldPin the oldPin to set
 	 */
-	public void setOldPassword(String oldPassword) {
-		this.oldPassword = oldPassword;
+	public void setOldPin(String oldPin) {
+		this.oldPin = oldPin;
 	}
 
 	/**
-	 * @return the newPassword
+	 * @return the newPin
 	 */
-	public String getNewPassword() {
-		return newPassword;
+	public String getNewPin() {
+		return newPin;
 	}
 
 	/**
-	 * @param newPassword the newPassword to set
+	 * @param newPin the newPin to set
 	 */
-	public void setNewPassword(String newPassword) {
-		this.newPassword = newPassword;
+	public void setNewPin(String newPin) {
+		this.newPin = newPin;
 	}
 
 	/**

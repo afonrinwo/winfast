@@ -24,14 +24,14 @@
 			"File": [
 				{
 					"name": "InfoFile-Appender",
-					"fileName": "${winwallet}/infolog.log",
+					"fileName": "${winwallet}/winwalletInfolog.log",
 					"PatternLayout": {
 						"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
 					}
 				},
 				{
 					"name": "ErrorFile-Appender",
-					"fileName": "${winwallet}/errorlog.log",
+					"fileName": "${winwallet}/winwalletErrorlog.log",
 					"PatternLayout": {
 						"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
 					}
@@ -39,8 +39,8 @@
 			],
 			"RollingFile": {
 				"name": "RollingFile-Appender",
-				"fileName": "${winwallet}/debuglog.log",
-				"filePattern": "${archive}/winwallet/debuglog.log.%d{yyyy-MM-dd-hh-mm}.gz",
+				"fileName": "${winwallet}/winwallerDebuglog.log",
+				"filePattern": "${archive}/winwallet/winwalletDebuglog.log.%d{yyyy-MM-dd-hh-mm}.gz",
 				"PatternLayout": {
 					"pattern": "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
 				},

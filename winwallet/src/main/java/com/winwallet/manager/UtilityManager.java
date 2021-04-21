@@ -34,6 +34,7 @@ import com.winwallet.model.cashout.RedeemCashOutTokenRequest;
 import com.winwallet.model.enquiry.WalletEnquiryRequest;
 import com.winwallet.model.enquiry.WalletEnquiryResponse;
 import com.winwallet.model.payment.PaymentLogObject;
+import com.winwallet.repository.AccessLogRepository;
 import com.winwallet.repository.AccessRepository;
 import com.winwallet.repository.CashOutRepository;
 import com.winwallet.repository.CustomerDataRepository;
@@ -80,6 +81,9 @@ public class UtilityManager {
 	AccessRepository accessRepository;
 
 	@Autowired
+	AccessLogRepository accessLogRepository;
+
+	@Autowired
 	PaymentRepository paymentRepository;
 
 	@Autowired
@@ -113,7 +117,7 @@ public class UtilityManager {
 			accessLogObject.setMsisdnNetwork(walletEnquiryRequest.getMsisdnNetwork());
 			accessLogObject.setRequestType("walletEnquiry");
 			accessLogObject.setRequestIn(requestIn);
-			accessLogObject = accessRepository.save(accessLogObject);
+			accessLogObject = accessLogRepository.save(accessLogObject);
 
 			customerDataObject = new CustomerDataObject();
 			customerDataObject = customerDataRepository.findByMsisdn(accessLogObject.getMsisdn());
@@ -136,17 +140,19 @@ public class UtilityManager {
 			customerWalletObject = new CustomerWalletObject();
 			if (customerWalletRepository.existsByMsisdn(walletBalanceRequest.getMsisdn())) {
 				customerWalletObject = customerWalletRepository.findByMsisdn(walletBalanceRequest.getMsisdn());
-				return responseUtility.walletBalanceResponse(0l, customerWalletObject,
-						walletBalanceRequest.getClientId(), 99);
+				return responseUtility.walletBalanceResponse(customerWalletObject, walletBalanceRequest.getClientId(),
+						00);
 
 			} else {
-				return responseUtility.walletBalanceResponse(0l, walletBalanceRequest.getClientId(), 35);
+				return responseUtility.walletBalanceResponse(walletBalanceRequest.getClientId(),
+						walletBalanceRequest.getMsisdn(), 35);
 			}
 
 		} catch (Exception ex) {
 			logger.error("walletBalance :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n"
 					+ ex.getStackTrace());
-			return responseUtility.walletBalanceResponse(0l, walletBalanceRequest.getClientId(), 99);
+			return responseUtility.walletBalanceResponse(walletBalanceRequest.getClientId(),
+					walletBalanceRequest.getMsisdn(), 99);
 
 		}
 	}
@@ -178,14 +184,47 @@ public class UtilityManager {
 		}
 	}
 
-	public boolean pinVerication(String msisdn, String pin) {
+	public String walletTransferRules(String msisdn, String pin, double amount) {
+		try {
+			if (pinVerication(msisdn, pin)) {
+				customerWalletObject = new CustomerWalletObject();
+				customerWalletObject = customerWalletRepository.findByMsisdn(msisdn);
+				if (customerWalletObject.getPnd() == 0) {
+					if (customerWalletObject.getAvailableBalance() > amount) {
+						return "00";
 
-		accessCodesObject = new AccessCodesObject();
-		accessCodesObject = accessRepository.findByMsisdn(msisdn);
-		if (accessCodesObject.getHashText().equals(authUtility.encryptString(pin))) {
-			return true;
-		} else {
+					} else {
+						return "14";
+					}
+
+				} else {
+					return "37";
+				}
+
+			} else {
+				return "36";
+			}
+		} catch (Exception ex) {
+			logger.error(
+					"walletRules :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n" + ex.getStackTrace());
+			return "99";
+		}
+	}
+
+	public boolean pinVerication(String msisdn, String pin) {
+		try {
+			accessCodesObject = new AccessCodesObject();
+			accessCodesObject = accessRepository.findByMsisdn(msisdn);
+			if (accessCodesObject.getHashText().equals(authUtility.encryptString(pin))) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (Exception ex) {
+			logger.error("pinVerication :: " + ex.getMessage() + "\n" + ex.getLocalizedMessage() + "\n"
+					+ ex.getStackTrace());
 			return false;
+
 		}
 	}
 
@@ -415,30 +454,40 @@ public class UtilityManager {
 			cashOutLogObject.setRequestIn(requestIn);
 			cashOutLogObject = cashOutRepository.save(cashOutLogObject);
 
-			cashOutTokenObject = new CashOutTokenObject();
-			cashOutTokenObject.setAmount(cashOutLogObject.getAmount());
-			cashOutTokenObject.setChannel(cashOutLogObject.getChannel());
-			cashOutTokenObject.setClientId(cashOutLogObject.getClientId());
-			cashOutTokenObject.setMsisdn2Debit(cashOutLogObject.getMsisdn2Debit());
-			cashOutTokenObject.setMsisdn2DebitNetwork(cashOutLogObject.getMsisdn2DebitNetwork());
-			cashOutTokenObject.setNarration(cashOutLogObject.getNarration());
-			cashOutTokenObject.setPayDate(null);
-			cashOutTokenObject.setPayFlag(0);
-			Random rnd = new Random();
-			int number = rnd.nextInt(999999);
-			String payToken = authUtility.base64Encode(String.format("%06d", number));
-			cashOutTokenObject.setPayToken(payToken);
-			cashOutTokenObject = cashOutRepository.save(cashOutTokenObject);
+			accessCodesObject = new AccessCodesObject();
+			accessCodesObject = accessRepository.findByMsisdn(generateCashOutTokenRequest.getMsisdn2Debit());
+			if (accessCodesObject == null) {
+				logger.error("AccessManager :: resetPin :: Invalid Customer Id or Password.");
+				return responseUtility.response(cashOutLogObject.getUniqueId(),
+						generateCashOutTokenRequest.getClientId(), 34);
 
-			transactionManager.commit(transactionStatus);
+			} else {
 
-			messageUtility.sendMail(cashOutTokenObject.getClientId(), "Wallet", "notification@winfast.ng",
-					"b.adewole@cloud-africa.com", "Winfast Game Account", "Your payment token is " + payToken
-							+ " for the amount  " + cashOutTokenObject.getAmount() + "from his/her wallet.",
-					LocalDateTime.now());
+				cashOutTokenObject = new CashOutTokenObject();
+				cashOutTokenObject.setAmount(cashOutLogObject.getAmount());
+				cashOutTokenObject.setChannel(cashOutLogObject.getChannel());
+				cashOutTokenObject.setClientId(cashOutLogObject.getClientId());
+				cashOutTokenObject.setMsisdn2Debit(cashOutLogObject.getMsisdn2Debit());
+				cashOutTokenObject.setMsisdn2DebitNetwork(cashOutLogObject.getMsisdn2DebitNetwork());
+				cashOutTokenObject.setNarration(cashOutLogObject.getNarration());
+				cashOutTokenObject.setPayFlag(0);
+				Random rnd = new Random();
+				int number = rnd.nextInt(999999);
+				String payToken = authUtility.base64Encode(String.format("%06d", number));
+				cashOutTokenObject.setPayToken(payToken);
+				cashOutTokenObject.setUniqueId(cashOutLogObject.getUniqueId());
+				cashOutTokenObject = cashOutRepository.save(cashOutTokenObject);
 
-			return responseUtility.response(cashOutLogObject.getUniqueId(), generateCashOutTokenRequest.getClientId(),
-					00);
+				transactionManager.commit(transactionStatus);
+
+				messageUtility.sendMail(cashOutTokenObject.getClientId(), "Wallet", "notification@winfast.ng",
+						"b.adewole@cloud-africa.com", "Winfast Game Account", "Your payment token is " + payToken
+								+ " for the amount  " + cashOutTokenObject.getAmount() + "from his/her wallet.",
+						LocalDateTime.now());
+
+				return responseUtility.response(cashOutLogObject.getUniqueId(),
+						generateCashOutTokenRequest.getClientId(), 00);
+			}
 
 		} catch (Exception ex) {
 			transactionManager.rollback(transactionStatus);
